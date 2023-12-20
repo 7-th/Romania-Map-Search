@@ -49,6 +49,8 @@ init_lbl.grid(column= 0, row= 0)
 # initial list
 init_menu = StringVar()
 graph_set = set()
+# try this keda
+init_list = list(Algorithms.Map.keys())
 for key in Algorithms.Map:
     graph_set.add(key)
     for value in Algorithms.Map[key]:
