@@ -48,16 +48,9 @@ init_lbl.grid(column= 0, row= 0)
 
 # initial list
 init_menu = StringVar()
-graph_set = set()
+
 # try this keda
 init_list = list(Algorithms.Map.keys())
-for key in Algorithms.Map:
-    graph_set.add(key)
-    for value in Algorithms.Map[key]:
-        graph_set.add(value)
-
-init_list = list(graph_set)
-
 
 init_drop = ttk.OptionMenu(inputs_frame, init_menu, "Arad",  *init_list)
 init_drop.config(width=20, style="my.TMenubutton")
@@ -69,7 +62,7 @@ goal_lbl.grid(column= 1, row= 0)
 
 # initial list
 goal_menu = StringVar()
-goal_list = list(graph_set)
+goal_list = list(Algorithms.Map.keys())
 
 
 goal_drop = ttk.OptionMenu(inputs_frame, goal_menu, "Bucharest", *goal_list)
