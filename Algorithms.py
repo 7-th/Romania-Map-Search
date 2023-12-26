@@ -21,9 +21,8 @@ Map = {
     'Neamt' : {'Iasi': 87}
 }
 
-
-# BFS:
-def breadth_first_search(start, goal, graph = Map):
+# (BFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def BFS_breadth_first_search(start, goal, graph=Map):
     visited = [] # Explored set
     queue = [(start, [start])] # fronter
 
@@ -44,3 +43,183 @@ def breadth_first_search(start, goal, graph = Map):
                 queue.append((neighbor, new_path))
 
     return ("False", "False")  # If the goal is not reached
+
+# (DLS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def DLS_depth_limited_search(start, goal, depth_limit:int=3, graph=Map):
+
+    stack = [(start, [start], 0)]
+    visited = []
+
+    cost = 0
+    while stack:
+        current_node, path, depth = stack.pop()
+        if current_node == goal:
+            for i in range(len(path)-1):
+                cost += graph[path[i]][path[i+1]]
+
+            return (path, cost) # Return to the GUI
+
+        if depth < depth_limit:
+
+            if current_node in visited:
+              continue
+
+            visited.append(current_node)
+            for neighbor in reversed(graph[current_node]):
+              if neighbor not in visited :
+                stack.append((neighbor, path + [neighbor], depth + 1))
+
+    return ("False", "False")  # If the goal is not reached
+
+# (DFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def DFS_depth_first_search(start, goal, graph=Map):
+    visited = [] # Explored set
+    stack = [(start, [start])] # fronter
+
+    while stack:
+        cost = 0
+        current_node, path = stack.pop()
+
+        if current_node == goal:
+            for i in range(len(path)-1):
+                cost += graph[path[i]][path[i+1]]
+            return (path, cost) # Return to the GUI
+
+        visited.append(current_node)
+
+
+        for neighbor in reversed(graph[current_node]):
+            if neighbor not in visited :
+              stack.append((neighbor, path + [neighbor]))
+
+    return ("False", "False")  # If the goal is not reached
+
+# (UCS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def UCS_uniform_cost_search(start, goal, graph=Map): # Using heapq for priority queue
+    
+    import heapq
+
+    priority_queue = [(0, start, [])]  # Each element is a tuple (cost, node, path)
+    visited = []
+
+    while priority_queue:
+        current_cost, current_node, path_so_far = heapq.heappop(priority_queue)
+
+        if current_node == goal:
+            return ((path_so_far + [current_node]), current_cost)  # Return cost and path
+
+        if current_node in visited:
+            continue
+
+        visited.append(current_node)
+
+        for neighbor, cost in graph[current_node].items():
+            if neighbor not in visited:
+                total_cost = current_cost + cost
+                heapq.heappush(priority_queue, (total_cost, neighbor, path_so_far + [current_node]))
+
+    return ("False", "False")  # If the goal is not reached
+
+# (IDDFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def IDDFS_iterative_deepening_depth_first_search(start, goal, graph=Map):
+    for depth in range(100):
+        result = DLS_depth_limited_search(start, goal, depth, graph)
+        if result[0] != "False":
+            return result
+
+    return ("False", "False")  # If the goal is not reached
+
+# (Bidirectional search) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def Bidirectional_search(start, goal, graph=Map):
+
+    forward_queue = [(start, [start])]  # Queue for the forward search
+    backward_queue = [(goal, [goal])]    # Queue for the backward search
+
+    visited_start = []  # Set to keep track of visited nodes in the forward search
+    visited_goal = []  # Set to keep track of visited nodes in the backward search
+
+    # Initialize path lists for forward and backward search
+    forward_paths = {start: [start]}
+    backward_paths = {goal: [goal]}
+
+    while forward_queue and backward_queue:
+
+    # Forward search ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        current_start, path_start = forward_queue.pop(0)
+        visited_start.append(current_start)
+
+        if current_start in visited_goal:
+            cost = 0
+            backward_path = backward_paths[current_start]
+            backward_path.pop()
+        # Calculate the cost of the path
+            for i in range(len(path_start)-1):
+                cost += graph[path_start[i]][path_start[i+1]]
+
+            return ((forward_paths[current_start] + backward_path[::-1]), cost)
+
+
+        for neighbor in graph[current_start]:
+            if neighbor not in visited_start:
+                forward_queue.append((neighbor, path_start + [neighbor]))
+                forward_paths[neighbor] = path_start + [neighbor]
+
+    # Backward search ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        current_goal, path_goal = backward_queue.pop(0)
+        visited_goal.append(current_goal)
+
+        if current_goal in visited_start:
+            cost = 0
+
+            forward_path = forward_paths[current_goal]
+            forward_path.pop()
+            # Calculate the cost of the path
+            for i in range(len(path_goal)-1):
+                cost += graph[path_goal[i]][path_goal[i+1]]
+
+            return ((forward_path + backward_paths[current_goal][::-1]), cost)
+
+        for neighbor in graph[current_goal]:
+            if neighbor not in visited_goal:
+                backward_queue.append((neighbor, path_goal + [neighbor]))
+                backward_paths[neighbor] =  path_goal + [neighbor]
+
+    return ("False", "False")  # If the goal is not reached
+
+# (Greedy Algorithm) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def Greedy_Algorithm(start, goal, graph=Map):
+    # We want to make dynamic heuristic values for each node between it and the goal
+    # The heuristic value is the straight line distance between the node and the goal
+
+    Map_heuristic = {}
+    for node in graph:
+        Map_heuristic[node] = 0
+        
+
+    queue = [(Map_heuristic[start], start, [start])]  # Priority queue with (heuristic value, node, path) tuples
+    visited = set()
+
+    while queue:
+        _, node, path = queue.pop(0)  # Get the node with the lowest heuristic value
+
+        if node == goal:
+            return path  # Return the path from start to goal
+
+        visited.add(node)
+
+        if node in graph:
+            neighbors = graph[node]
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    new_path = path + [neighbor]
+                    queue.append((Map_heuristic[neighbor], neighbor, new_path))
+
+        queue.sort()  # Sort the queue based on heuristic value
+
+    return ("False", "False")  # If the goal is not reached
+
+
+# (A* Algorithm) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# We want to return : (path, cost) 
