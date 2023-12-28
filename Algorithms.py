@@ -274,4 +274,3 @@ def A_Star_Algorithm(start, goal, graph=Map):
     return ("False", "False")  # If the goal is not reached
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# We want to return : (path, cost) 
