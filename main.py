@@ -107,14 +107,26 @@ def cal(algorthim):
     
     elif (algorthim == 'Bidirectional search'):
         return Algorithms.Bidirectional_search(str(init_menu.get()), str(goal_menu.get()))
+    
+    elif (algorthim == 'Greedy Algorithm'):
+        return Algorithms.Greedy_Algorithm(str(init_menu.get()), str(goal_menu.get()))
+    
+    elif (algorthim == 'A* Algorithm'):
+        return Algorithms.A_Star_Algorithm(str(init_menu.get()), str(goal_menu.get()))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # view result function
 def view_result():
     # Later: edit result font here
     path_to_goal, cost = cal(alg_menu.get())
-    res_text = f'Path: from {path_to_goal[0]} to {path_to_goal[-1]}\n\n {" -> ".join(path_to_goal)} \n\n Cost: {cost}'
+
+    if path_to_goal != "False":
+        res_text = f'Path: from {path_to_goal[0]} to {path_to_goal[-1]}\n\n {" -> ".join(path_to_goal)} \n\n Cost: {cost}'
+    else:
+        res_text = "Path not found"
+
     result_lbl.configure(text=res_text)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
 # Calculate button
 btn = ttk.Button(inputs_frame, text="Calculate", command= view_result, style= 'my.TButton')

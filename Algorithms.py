@@ -1,3 +1,5 @@
+import heapq
+
 Map = {
     'Arad' : {'Zerind' : 75, 'Sibiu': 140, 'Timisoara' : 118},
     'Zerind' : {'Arad': 75, 'Oradea': 71},
@@ -20,6 +22,10 @@ Map = {
     'Iasi' : {'Vaslui': 92, 'Neamt': 87},
     'Neamt' : {'Iasi': 87}
 }
+
+###########################################################################################################################################
+############################################### Uninformed Search Algorithms  #############################################################
+###########################################################################################################################################
 
 # (BFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def BFS_breadth_first_search(start, goal, graph=Map):
@@ -186,24 +192,35 @@ def Bidirectional_search(start, goal, graph=Map):
 
     return ("False", "False")  # If the goal is not reached
 
+#########################################################################################################################################
+############################################### Informed Search Algorithms  #############################################################
+#########################################################################################################################################
+
+heuristic_values = {
+    'Arad': 366, 'Bucharest': 0, 'Craiova': 160, 'Dobreta': 242, 'Zerind' : 80, 
+    'Eforie': 161, 'Fagaras': 176, 'Giurgiu': 77, 'Hirsova': 151, 
+    'Iasi': 226, 'Lugoj': 244, 'Mehadia': 241, 'Neamt': 234, 
+    'Oradea': 380, 'Pitesti': 100, 'Rimnicu': 193, 'Sibiu': 253, 
+    'Timisoara': 329, 'Urziceni': 80, 'Vaslui': 199, 'Iasi': 226
+    }
+
 # (Greedy Algorithm) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def Greedy_Algorithm(start, goal, graph=Map):
-    # We want to make dynamic heuristic values for each node between it and the goal
-    # The heuristic value is the straight line distance between the node and the goal
 
-    Map_heuristic = {}
-    for node in graph:
-        Map_heuristic[node] = 0
-        
+    # Priority queue with (heuristic value, node, path) tuples
+    queue = [(heuristic_values[start], start, [start])]
 
-    queue = [(Map_heuristic[start], start, [start])]  # Priority queue with (heuristic value, node, path) tuples
     visited = set()
 
+    cost = 0
     while queue:
         _, node, path = queue.pop(0)  # Get the node with the lowest heuristic value
 
         if node == goal:
-            return path  # Return the path from start to goal
+            for i in range(len(path)-1):
+                cost += graph[path[i]][path[i+1]]
+
+            return (path, cost)  # Return the path from start to goal
 
         visited.add(node)
 
@@ -212,14 +229,49 @@ def Greedy_Algorithm(start, goal, graph=Map):
             for neighbor in neighbors:
                 if neighbor not in visited:
                     new_path = path + [neighbor]
-                    queue.append((Map_heuristic[neighbor], neighbor, new_path))
+                    queue.append((heuristic_values[neighbor], neighbor, new_path))
 
         queue.sort()  # Sort the queue based on heuristic value
 
     return ("False", "False")  # If the goal is not reached
 
-
 # (A* Algorithm) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def A_Star_Algorithm(start, goal, graph=Map):
+
+    # Priority queue with (heuristic_value, node, path) tuples
+    queue = [(0, start, [start])]
+
+    visited = []
+
+    final_cost = 0
+
+    while queue:
+        # Get the node with the lowest heuristic value
+        cost, node, path = heapq.heappop(queue)
+
+        if node == goal:
+            for i in range(len(path)-1):
+                final_cost += graph[path[i]][path[i+1]]
+
+            return (path, final_cost)  # Return the path from start to goal
+
+        visited.append(node)
+
+        if node in graph:
+            neighbors = graph[node]
+
+            for neighbor, eage_cost in neighbors.items():
+
+                if neighbor not in visited:
+                    new_path = path + [neighbor]
+                    new_cost = cost + eage_cost
+
+                    total_cost = new_cost + heuristic_values[neighbor]
+
+                    heapq.heappush(queue, (total_cost, neighbor, new_path))
+
+    return ("False", "False")  # If the goal is not reached
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # We want to return : (path, cost) 
