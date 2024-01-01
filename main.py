@@ -49,7 +49,6 @@ init_lbl.grid(column= 0, row= 0)
 # initial list
 init_menu = StringVar()
 
-# try this keda
 init_list = list(Algorithms.Map.keys())
 
 init_drop = ttk.OptionMenu(inputs_frame, init_menu, "Arad",  *init_list)
@@ -77,6 +76,7 @@ alg_lbl.grid(column= 2, row= 0)
 # algorithms list
 alg_menu = StringVar()
 alg_list = ['BFS', 'DLS', 'DFS', 'UCS', 'IDDFS', 'Bidirectional search', 'Greedy Algorithm', 'A* Algorithm']
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 alg_drop = ttk.OptionMenu(inputs_frame, alg_menu, "BFS", *alg_list)
@@ -87,8 +87,8 @@ result_lbl = tk.Label(root, text= "Result Will Appear Here", font= ("Arial", 12,
 result_lbl.pack(pady=5)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Calculate function
-def cal(algorthim):
-    # We want to return : (path, cost) 
+def cal(algorthim) -> tuple:
+    # Returning (path, cost)
 
     if (algorthim == "BFS"):
         return Algorithms.BFS_breadth_first_search(str(init_menu.get()), str(goal_menu.get()))
@@ -123,7 +123,7 @@ def view_result():
     if path_to_goal != "False":
         res_text = f'Path: from {path_to_goal[0]} to {path_to_goal[-1]}\n\n {" -> ".join(path_to_goal)} \n\n Cost: {cost}'
     else:
-        res_text = "Path not found"
+        res_text = "Path couldn't be not found"
 
     result_lbl.configure(text=res_text)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

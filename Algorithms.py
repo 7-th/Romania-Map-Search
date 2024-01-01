@@ -30,15 +30,17 @@ Map = {
 # (BFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def BFS_breadth_first_search(start, goal, graph=Map):
     visited = [] # Explored set
-    queue = [(start, [start])] # fronter
+    queue = [(start, [start])] # Fronter
 
     while queue:
         cost = 0
         current_node, path = queue.pop(0)
 
         if current_node == goal:
+        # Example path : ['Arad', 'Sibiu', 'Rimnicu', 'Pitesti', 'Bucharest']
             for i in range(len(path)-1):
                 cost += graph[path[i]][path[i+1]]
+
             return (path, cost) # Return to the GUI
 
         visited.append(current_node)
@@ -47,6 +49,29 @@ def BFS_breadth_first_search(start, goal, graph=Map):
             if neighbor not in visited :
                 new_path = path + [neighbor]
                 queue.append((neighbor, new_path))
+
+    return ("False", "False")  # If the goal is not reached
+
+# (DFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def DFS_depth_first_search(start, goal, graph=Map):
+    visited = [] # Explored set
+    stack = [(start, [start])] # fronter
+
+    while stack:
+        cost = 0
+        current_node, path = stack.pop()
+
+        if current_node == goal:
+            for i in range(len(path)-1):
+                cost += graph[path[i]][path[i+1]]
+            return (path, cost) # Return to the GUI
+
+        visited.append(current_node)
+
+
+        for neighbor in reversed(graph[current_node]):
+            if neighbor not in visited :
+              stack.append((neighbor, path + [neighbor]))
 
     return ("False", "False")  # If the goal is not reached
 
@@ -77,31 +102,8 @@ def DLS_depth_limited_search(start, goal, depth_limit:int=3, graph=Map):
 
     return ("False", "False")  # If the goal is not reached
 
-# (DFS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def DFS_depth_first_search(start, goal, graph=Map):
-    visited = [] # Explored set
-    stack = [(start, [start])] # fronter
-
-    while stack:
-        cost = 0
-        current_node, path = stack.pop()
-
-        if current_node == goal:
-            for i in range(len(path)-1):
-                cost += graph[path[i]][path[i+1]]
-            return (path, cost) # Return to the GUI
-
-        visited.append(current_node)
-
-
-        for neighbor in reversed(graph[current_node]):
-            if neighbor not in visited :
-              stack.append((neighbor, path + [neighbor]))
-
-    return ("False", "False")  # If the goal is not reached
-
 # (UCS) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def UCS_uniform_cost_search(start, goal, graph=Map): # Using heapq for priority queue
+def UCS_ (start, goal, graph=Map): # Using heapq for priority queue
     
     import heapq
 
@@ -236,7 +238,6 @@ def Greedy_Algorithm(start, goal, graph=Map):
     return ("False", "False")  # If the goal is not reached
 
 # (A* Algorithm) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 def A_Star_Algorithm(start, goal, graph=Map):
 
     # Priority queue with (heuristic_value, node, path) tuples
